@@ -1,57 +1,11 @@
 <template>
   <div class="map-viewer">
     <div ref="sceneContainer" class="scene-container"></div>
-    
-    <div class="viewer-panel">
-      <div class="object-info" v-if="selectedObject">
-        <h3>对象信息</h3>
-        <div class="info-item">
-          <span class="label">类型:</span>
-          <span class="value">{{ getObjectTypeName(selectedObject.type) }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">位置:</span>
-          <span class="value">
-            X: {{ selectedObject.position.x.toFixed(2) }}, 
-            Z: {{ selectedObject.position.z.toFixed(2) }}
-          </span>
-        </div>
-        <div class="info-item" v-if="selectedObject.name">
-          <span class="label">名称:</span>
-          <span class="value">{{ selectedObject.name }}</span>
-        </div>
-        <div class="info-item" v-if="selectedObject.description">
-          <span class="label">描述:</span>
-          <p class="description">{{ selectedObject.description }}</p>
-        </div>
-      </div>
-      <div class="no-selection" v-else>
-        <p>点击地图上的对象查看详细信息</p>
-      </div>
-      
-      <div class="scene-selector">
-        <h3>场景选择</h3>
-        <div class="scene-list">
-          <button 
-            v-for="scene in availableScenes" 
-            :key="scene.id"
-            @click="loadScene(scene.id)"
-            :class="{ active: currentSceneId === scene.id }"
-          >
-            {{ scene.name }}
-          </button>
-        </div>
-      </div>
-      
-      <div class="viewer-actions">
-        <button @click="resetCamera">重置视角</button>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useThreeScene } from '../../composables/useThreeScene'
 import { useSceneStore } from '../../stores/sceneStore'
 import { OBJECT_TYPES, objectFactory } from '../../utils/objectFactory'
@@ -61,43 +15,13 @@ const sceneStore = useSceneStore()
 
 // 使用Three.js场景组合式API
 const { 
-  scene, 
-  camera, 
-  renderer, 
-  controls,
   addObjectToScene,
   removeObjectFromScene,
-  updateCameraTilt,
-  setTiltByHeight
+  resetCamera
 } = useThreeScene(sceneContainer)
-
-// 当前选中的对象
-const selectedObject = computed(() => sceneStore.selectedObject)
-
-// 可用场景列表
-const availableScenes = [
-  { id: 'default', name: '默认场景' },
-  { id: 'city', name: '城市场景' },
-  { id: 'village', name: '乡村场景' },
-  { id: 'park', name: '公园场景' }
-]
 
 // 当前场景ID
 const currentSceneId = ref('default')
-
-// 获取对象类型名称
-function getObjectTypeName(type) {
-  switch (type) {
-    case OBJECT_TYPES.HOUSE:
-      return '房子'
-    case OBJECT_TYPES.TREE:
-      return '树'
-    case OBJECT_TYPES.BUILDING:
-      return '建筑'
-    default:
-      return '未知'
-  }
-}
 
 // 加载场景
 async function loadScene(sceneId) {
@@ -105,21 +29,13 @@ async function loadScene(sceneId) {
     // 更新当前场景ID
     currentSceneId.value = sceneId
     
-    // 清除当前场景中的对象
-    if (scene.value) {
-      // 找到所有需要移除的对象
-      const objectsToRemove = []
-      scene.value.children.forEach(child => {
-        if (child.userData && child.userData.id) {
-          objectsToRemove.push(child)
-        }
-      })
-      
-      // 移除对象
-      objectsToRemove.forEach(obj => {
-        scene.value.remove(obj)
-      })
-    }
+    // 获取当前场景中的所有对象ID
+    const currentObjectIds = sceneStore.objects.map(obj => obj.id)
+    
+    // 移除所有当前对象
+    currentObjectIds.forEach(id => {
+      removeObjectFromScene(id)
+    })
     
     // 清除store中的对象
     sceneStore.clearObjects()
@@ -137,10 +53,12 @@ async function loadScene(sceneId) {
         
         if (object3D) {
           // 添加到场景
-          addObjectToScene(object3D, objData)
+          const success = addObjectToScene(object3D, objData)
           
-          // 添加到store
-          sceneStore.addObject(objData)
+          if (success) {
+            // 添加到store
+            sceneStore.addObject(objData)
+          }
         }
       } catch (error) {
         console.error(`处理对象失败: ${objData.id}`, error)
@@ -380,26 +298,7 @@ async function getSceneData(sceneId) {
   }
 }
 
-// 重置相机位置
-function resetCamera() {
-  if (camera.value && controls.value) {
-    // 设置相机位置，使用合理的初始高度
-    camera.value.position.set(0, 120, 120)
-    
-    // 不使用lookAt，让setTiltByHeight完全控制相机旋转
-    
-    // 重置控制器目标点
-    controls.value.target.set(0, 0, 0)
-    
-    // 更新控制器
-    controls.value.update()
-    
-    // 更新相机俯角，保持水平位置
-    setTiltByHeight(0, 120)
-  }
-}
-
-// 监听场景点击事件
+// 组件挂载时加载默认场景
 onMounted(() => {
   // 加载默认场景
   loadScene('default')
@@ -413,104 +312,14 @@ onUnmounted(() => {
 
 <style scoped>
 .map-viewer {
-  display: flex;
   height: 100%;
   width: 100%;
 }
 
 .scene-container {
-  flex: 1;
+  height: 100%;
+  width: 100%;
   position: relative;
   overflow: hidden;
-}
-
-.viewer-panel {
-  width: 300px;
-  padding: 16px;
-  background-color: #f5f5f5;
-  border-left: 1px solid #ddd;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  overflow-y: auto;
-}
-
-.object-info, .no-selection, .scene-selector {
-  background-color: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.object-info h3, .scene-selector h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 16px;
-  color: #333;
-}
-
-.info-item {
-  margin-bottom: 8px;
-}
-
-.label {
-  font-weight: bold;
-  color: #555;
-  margin-right: 8px;
-}
-
-.description {
-  margin-top: 4px;
-  font-size: 14px;
-  line-height: 1.4;
-  color: #666;
-}
-
-.no-selection p {
-  color: #888;
-  font-style: italic;
-  text-align: center;
-}
-
-.scene-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.scene-list button {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-}
-
-.scene-list button.active {
-  background-color: #4CAF50;
-  color: white;
-  border-color: #4CAF50;
-}
-
-.viewer-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.viewer-actions button {
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.viewer-actions button:hover {
-  background-color: #45a049;
 }
 </style> 
