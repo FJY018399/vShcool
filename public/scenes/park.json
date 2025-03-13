@@ -1,0 +1,49 @@
+{
+  "objects": [
+    {
+      "id": "1",
+      "type": "tree",
+      "name": "中央大树",
+      "description": "这是公园中心的一棵巨大的橡树，已有百年历史。",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 2, "y": 2, "z": 2 },
+      "options": { "trunkColor": 9127187, "leavesColor": 25600 }
+    },
+    {
+      "id": "2",
+      "type": "tree",
+      "name": "松树",
+      "description": "这是一棵高大的松树，四季常青。",
+      "position": { "x": 40, "y": 0, "z": 40 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1.2, "y": 1.5, "z": 1.2 },
+      "options": { "trunkColor": 9127187, "leavesColor": 3050583 }
+    },
+    {
+      "id": "3",
+      "type": "tree",
+      "name": "樱花树",
+      "description": "这是一棵美丽的樱花树，春季盛开粉色花朵。",
+      "position": { "x": -40, "y": 0, "z": 40 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "options": { "trunkColor": 9127187, "leavesColor": 16758193 }
+    },
+    {
+      "id": "4",
+      "type": "house",
+      "name": "凉亭",
+      "description": "这是一座传统风格的凉亭，供游客休息。",
+      "position": { "x": 0, "y": 0, "z": 60 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 0.8, "y": 0.8, "z": 0.8 },
+      "options": { "color": 16119260, "roofColor": 9109504 }
+    }
+  ],
+  "mapSettings": {
+    "width": 1024,
+    "height": 1024,
+    "texture": "/textures/grid.png"
+  }
+} 

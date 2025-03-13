@@ -1,0 +1,49 @@
+{
+  "objects": [
+    {
+      "id": "1",
+      "type": "building",
+      "name": "摩天大楼",
+      "description": "这是城市中心的摩天大楼，高度超过200米。",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1.5, "y": 2, "z": 1.5 },
+      "options": { "color": 8947848 }
+    },
+    {
+      "id": "2",
+      "type": "building",
+      "name": "商业中心",
+      "description": "这是一座繁忙的商业中心，包含多家商店和餐厅。",
+      "position": { "x": 50, "y": 0, "z": 50 },
+      "rotation": { "x": 0, "y": 0.2, "z": 0 },
+      "scale": { "x": 1.2, "y": 1, "z": 1.2 },
+      "options": { "color": 11184810 }
+    },
+    {
+      "id": "3",
+      "type": "building",
+      "name": "公寓楼",
+      "description": "这是一座现代化的公寓楼，提供舒适的居住环境。",
+      "position": { "x": -50, "y": 0, "z": 50 },
+      "rotation": { "x": 0, "y": -0.2, "z": 0 },
+      "scale": { "x": 1, "y": 1.5, "z": 1 },
+      "options": { "color": 13421772 }
+    },
+    {
+      "id": "4",
+      "type": "tree",
+      "name": "城市绿化",
+      "description": "城市中心的绿化带，提供了一片宜人的休息区域。",
+      "position": { "x": 0, "y": 0, "z": 80 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "options": { "trunkColor": 9127187, "leavesColor": 43520 }
+    }
+  ],
+  "mapSettings": {
+    "width": 1024,
+    "height": 1024,
+    "texture": "/textures/grid.png"
+  }
+} 

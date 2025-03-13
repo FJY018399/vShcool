@@ -1,0 +1,39 @@
+{
+  "objects": [
+    {
+      "id": "1",
+      "type": "house",
+      "name": "主屋",
+      "description": "这是一座美丽的主屋，位于地图中心。",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "options": { "color": 16777215, "roofColor": 16711680 }
+    },
+    {
+      "id": "2",
+      "type": "tree",
+      "name": "大树",
+      "description": "这是一棵高大的树，提供了良好的遮阳。",
+      "position": { "x": 30, "y": 0, "z": 30 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1.2, "y": 1.2, "z": 1.2 },
+      "options": { "trunkColor": 9127187, "leavesColor": 43520 }
+    },
+    {
+      "id": "3",
+      "type": "building",
+      "name": "办公楼",
+      "description": "这是一座现代化的办公楼。",
+      "position": { "x": -50, "y": 0, "z": -50 },
+      "rotation": { "x": 0, "y": 0.5, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "options": { "color": 11184810 }
+    }
+  ],
+  "mapSettings": {
+    "width": 1024,
+    "height": 1024,
+    "texture": "/textures/grid.png"
+  }
+} 

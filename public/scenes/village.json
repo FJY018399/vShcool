@@ -1,0 +1,49 @@
+{
+  "objects": [
+    {
+      "id": "1",
+      "type": "house",
+      "name": "农舍",
+      "description": "这是一座传统的农舍，周围环绕着田野。",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0.1, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "options": { "color": 16113387, "roofColor": 10824234 }
+    },
+    {
+      "id": "2",
+      "type": "tree",
+      "name": "果树",
+      "description": "这是一棵结满果实的果树。",
+      "position": { "x": 30, "y": 0, "z": 20 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "options": { "trunkColor": 9127187, "leavesColor": 2263842 }
+    },
+    {
+      "id": "3",
+      "type": "tree",
+      "name": "大树",
+      "description": "这是一棵古老的大树，村民们经常在树下乘凉。",
+      "position": { "x": -40, "y": 0, "z": -30 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1.5, "y": 1.5, "z": 1.5 },
+      "options": { "trunkColor": 9127187, "leavesColor": 25600 }
+    },
+    {
+      "id": "4",
+      "type": "house",
+      "name": "谷仓",
+      "description": "这是一座用于存储农作物的谷仓。",
+      "position": { "x": 50, "y": 0, "z": -20 },
+      "rotation": { "x": 0, "y": -0.2, "z": 0 },
+      "scale": { "x": 1.2, "y": 1.2, "z": 1.2 },
+      "options": { "color": 13478847, "roofColor": 9127187 }
+    }
+  ],
+  "mapSettings": {
+    "width": 1024,
+    "height": 1024,
+    "texture": "/textures/grid.png"
+  }
+} 
