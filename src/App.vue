@@ -5,7 +5,7 @@ import MapViewer from './components/Viewer/MapViewer.vue'
 <template>
   <div class="app">
     <main class="app-content">
-      <MapViewer />
+      <MapViewer scene-id="school" />
     </main>
   </div>
 </template>
@@ -32,6 +32,20 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.app-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  margin: 0;
 }
 
 .app-content {

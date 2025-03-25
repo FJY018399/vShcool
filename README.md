@@ -9,10 +9,12 @@ vShcool是一个轻量级的3D场景查看器，专为教育和展示目的设�
 ### 主要功能
 
 - 加载和查看预设的3D场景
-- 支持多种3D对象类型（房屋、树木、建筑物等）
+- 支持多种3D对象类型（房屋、树木、建筑物、教学楼、实验室、体育馆等）
 - 高性能的3D渲染
 - 鼠标拖拽移动摄像机
 - 滚轮滚动调整视图高度（俯角自动调整）
+- 场景选择切换功能
+- 对象选择与信息显示功能
 
 ## 技术架构
 
@@ -53,17 +55,18 @@ vShcool/
 - 处理窗口大小调整
 - 管理动画循环
 - 自定义相机控制（移动和高度调整）
+- 对象选择功能（射线投射）
 
 ```javascript
 // 使用示例
-const { addObjectToScene, removeObjectFromScene, resetCamera } = useThreeScene(containerRef)
+const { addObjectToScene, removeObjectFromScene, resetCamera, setupObjectSelection } = useThreeScene(containerRef)
 ```
 
 ### 2. 对象工厂 (objectFactory.js)
 
 `objectFactory.js` 负责创建各种3D对象。它提供以下功能：
 
-- 创建不同类型的3D对象（房屋、树木、建筑物等）
+- 创建不同类型的3D对象（房屋、树木、建筑物、教学楼、实验室、体育馆等）
 - 自定义对象属性（颜色、尺寸等）
 - 添加细节和纹理
 
@@ -72,11 +75,23 @@ const { addObjectToScene, removeObjectFromScene, resetCamera } = useThreeScene(c
 const house = await objectFactory.createObject(OBJECT_TYPES.HOUSE, { color: 0xffffff })
 ```
 
+#### 对象类型
+
+应用支持以下对象类型：
+
+- **房屋 (HOUSE)**: 简单的住宅建筑，带有屋顶、窗户和门
+- **树木 (TREE)**: 多层次的树木，带有树干和树叶
+- **建筑物 (BUILDING)**: 高层建筑，带有多层窗户和细节
+- **教学楼 (CLASSROOM)**: 学校教学楼，带有多层教室和特殊入口
+- **实验室 (LABORATORY)**: 科学实验室，带有现代风格设计和特殊屋顶
+- **体育馆 (GYMNASIUM)**: 拱形体育馆，带有特殊的半圆柱形结构
+
 ### 3. 状态管理 (sceneStore.js)
 
 `sceneStore.js` 使用Pinia管理应用状态。它存储以下信息：
 
 - 场景中的所有对象
+- 当前选中的对象
 - 相机设置
 - 地图设置
 
@@ -84,6 +99,7 @@ const house = await objectFactory.createObject(OBJECT_TYPES.HOUSE, { color: 0xff
 // 使用示例
 const sceneStore = useSceneStore()
 sceneStore.addObject(objectData)
+sceneStore.selectObject(objectId)
 ```
 
 ### 4. 场景查看器 (MapViewer.vue)
@@ -91,14 +107,38 @@ sceneStore.addObject(objectData)
 `MapViewer.vue` 是主要的用户界面组件，它提供以下功能：
 
 - 显示3D场景
-- 自动加载默认场景
+- 加载不同的预设场景
+- 显示选中对象的信息面板
+
+## 预设场景
+
+应用包含以下预设场景：
+
+- **默认场景**: 简单的测试场景，包含一个房屋、一棵树和一栋建筑物
+- **城市场景**: 模拟城市环境，包含多个高层建筑
+- **乡村场景**: 模拟乡村环境，包含农舍、谷仓和树木
+- **公园场景**: 模拟公园环境，包含多种树木和一个凉亭
+- **学校场景**: 模拟学校环境，包含教学楼、实验室、体育馆和其他校园建筑
 
 ## 使用指南
+
+### 场景选择
+
+在顶部选择框中选择不同的场景进行加载和查看。
 
 ### 场景导航
 
 - **鼠标拖拽**: 在场景中按住鼠标左键并拖拽可以移动摄像机，拖拽方向与移动方向相反（类似于"拖拽"场景）
 - **滚轮滚动**: 使用鼠标滚轮可以调整视图高度，相机俯角会根据高度自动调整，提供更自然的视角
+- **点击选择**: 点击场景中的建筑物或对象可以选择它们，右下角会显示所选对象的信息
+
+### 信息面板
+
+右下角的信息面板会显示当前选中对象的以下信息：
+
+- 对象名称
+- 对象描述
+- 对象类型
 
 ## 相机控制系统
 
@@ -113,6 +153,14 @@ sceneStore.addObject(objectData)
    - 向上/下拖动鼠标会使摄像机向后/前移动
 
 3. **平滑过渡**: 所有相机移动都有平滑过渡效果，提供更好的用户体验
+
+## 对象选择系统
+
+本项目实现了对象选择系统，具有以下特点：
+
+1. **射线投射选择**: 使用Three.js的射线投射功能，精确检测用户点击的对象
+2. **对象层次结构遍历**: 自动向上遍历对象层次结构，找到包含ID的父对象
+3. **状态管理集成**: 与Pinia状态管理系统集成，保持UI与选择状态的同步
 
 ## 性能优化
 
@@ -136,7 +184,12 @@ sceneStore.addObject(objectData)
    - 降低阴影质量
    - 检查浏览器是否支持WebGL
 
-3. **对象显示异常**
+3. **对象选择不工作**
+   - 确保对象具有唯一ID
+   - 检查对象层次结构是否正确
+   - 确认射线投射设置正确
+
+4. **对象显示异常**
    - 检查对象的位置、旋转和缩放值
    - 确保材质和纹理正确加载
 
@@ -145,6 +198,9 @@ sceneStore.addObject(objectData)
 - 添加更多类型的3D对象
 - 优化渲染性能
 - 支持更多场景类型
+- 添加交互式编辑功能
+- 实现场景保存和加载功能
+- 增强对象选择和信息展示
 
 ## 贡献指南
 

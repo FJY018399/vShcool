@@ -13,6 +13,10 @@ export function useThreeScene(container) {
   let previousMousePosition = { x: 0, y: 0 }
   const sceneStore = useSceneStore()
   
+  // 射线投射器（用于对象选择）
+  let raycaster = null
+  let mouse = null
+  
   // 相机设置
   const cameraSettings = {
     minHeight: 30,    // 最小高度
@@ -54,6 +58,10 @@ export function useThreeScene(container) {
       renderer.shadowMap.type = THREE.PCFSoftShadowMap // 柔和阴影
       container.value.appendChild(renderer.domElement)
       
+      // 初始化射线投射器和鼠标向量
+      raycaster = new THREE.Raycaster()
+      mouse = new THREE.Vector2()
+      
       // 设置自定义控制
       setupCustomControls()
       
@@ -92,6 +100,9 @@ export function useThreeScene(container) {
     
     // 滚轮事件
     domElement.addEventListener('wheel', onMouseWheel, { passive: false })
+    
+    // 鼠标点击事件（用于选择对象）
+    domElement.addEventListener('click', onMouseClick)
   }
   
   // 鼠标按下事件处理
@@ -215,6 +226,49 @@ export function useThreeScene(container) {
     
     // 设置相机位置和角度
     setCamera(camera.position.x, camera.position.z, newHeight, newTilt)
+  }
+  
+  // 鼠标点击事件处理
+  const onMouseClick = (event) => {
+    if (isDragging) return // 如果是拖拽操作，不处理点击
+    
+    event.preventDefault()
+    
+    if (!scene || !camera) return
+    
+    // 计算鼠标位置的归一化设备坐标 (-1 到 +1)
+    const rect = renderer.domElement.getBoundingClientRect()
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+    
+    // 设置射线投射器
+    raycaster.setFromCamera(mouse, camera)
+    
+    // 计算与射线相交的对象
+    const intersects = raycaster.intersectObjects(scene.children, true)
+    
+    if (intersects.length > 0) {
+      // 从交点找到最顶层对象
+      let selectedObject = intersects[0].object
+      
+      // 向上遍历对象层次结构，找到包含id的对象
+      while (selectedObject && (!selectedObject.userData || !selectedObject.userData.id)) {
+        selectedObject = selectedObject.parent
+      }
+      
+      // 如果找到了包含id的对象
+      if (selectedObject && selectedObject.userData && selectedObject.userData.id) {
+        // 通知store选择对象
+        if (sceneStore) {
+          sceneStore.selectObject(selectedObject.userData.id)
+        }
+      }
+    } else {
+      // 如果没有点击任何对象，清除选择
+      if (sceneStore) {
+        sceneStore.clearSelection()
+      }
+    }
   }
   
   // 设置光照
@@ -370,6 +424,14 @@ export function useThreeScene(container) {
     }
   }
   
+  // 设置对象选择功能
+  const setupObjectSelection = (storeInstance) => {
+    // 更新store引用
+    if (storeInstance) {
+      // 仅在需要时更新引用
+    }
+  }
+  
   // 组件挂载时初始化场景
   onMounted(() => {
     if (container.value) {
@@ -387,6 +449,7 @@ export function useThreeScene(container) {
       renderer.domElement.removeEventListener('mouseup', onMouseUp)
       renderer.domElement.removeEventListener('mouseleave', onMouseUp)
       renderer.domElement.removeEventListener('wheel', onMouseWheel)
+      renderer.domElement.removeEventListener('click', onMouseClick)
     }
     
     if (renderer) {
@@ -413,11 +476,14 @@ export function useThreeScene(container) {
     camera = null
     renderer = null
     controls = null
+    raycaster = null
+    mouse = null
   })
   
   return {
     addObjectToScene,
     removeObjectFromScene,
-    resetCamera
+    resetCamera,
+    setupObjectSelection
   }
 } 
