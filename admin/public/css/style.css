@@ -1,0 +1,60 @@
+/* 基本样式 */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+}
+
+main {
+  flex-grow: 1;
+}
+
+/* 表格样式 */
+.table-responsive {
+  border-radius: 0.25rem;
+  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* 卡片样式 */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1.5rem;
+}
+
+/* 表单样式 */
+label {
+  font-weight: 500;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* 按钮组样式 */
+.btn-group .btn {
+  margin-right: 2px;
+  margin-left: 2px;
+}
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .table-responsive {
+    border: none;
+    box-shadow: none;
+  }
+  
+  .table th, .table td {
+    font-size: 0.875rem;
+  }
+  
+  .btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+} 

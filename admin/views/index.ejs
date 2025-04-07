@@ -1,0 +1,81 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1>建筑物管理</h1>
+    <p>下面列出了所有虚拟校园中的建筑物。您可以添加新建筑物、编辑现有建筑物或删除不需要的建筑物。</p>
+    <a href="/buildings/add" class="btn btn-primary mb-3">添加新建筑物</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <% if (buildings && buildings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>名称</th>
+              <th>类型</th>
+              <th>描述</th>
+              <th>位置 (X, Y, Z)</th>
+              <th>Y轴旋转</th>
+              <th>缩放</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% buildings.forEach(building => { %>
+              <tr>
+                <td><%= building.name %></td>
+                <td>
+                  <% const typeLabels = {
+                    'house': '住宅建筑',
+                    'tree': '树木',
+                    'building': '普通建筑',
+                    'classroom': '教学楼',
+                    'laboratory': '实验室',
+                    'gymnasium': '体育馆',
+                    'playground': '操场'
+                  }; %>
+                  <%= typeLabels[building.type] || building.type %>
+                </td>
+                <td><%= building.description %></td>
+                <td>(<%= building.position.x %>, <%= building.position.y %>, <%= building.position.z %>)</td>
+                <td><%= building.rotation && building.rotation.y ? building.rotation.y : 0 %>°</td>
+                <td><%= building.scale && building.scale.x ? building.scale.x : 1 %></td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <a href="/buildings/edit/<%= building.id %>">
+                      <button class="btn btn-warning">编辑</button>
+                    </a>
+                    <form action="/buildings/delete/<%= building.id %>" method="POST" class="d-inline" onsubmit="return confirm('确定要删除此建筑物吗？');">
+                      <button type="submit" class="btn btn-danger">删除</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="alert alert-info">
+        <p>目前还没有添加任何建筑物。点击上方的"添加新建筑物"按钮开始添加。</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">API端点</h5>
+      </div>
+      <div class="card-body">
+        <p>下面是可用的API端点，用于在前端获取建筑物数据：</p>
+        <pre><code>GET /api/buildings</code></pre>
+        <p>您可以通过此API将数据集成到前端的地图系统中。</p>
+      </div>
+    </div>
+  </div>
+</div> 

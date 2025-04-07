@@ -1,6 +1,6 @@
 # vShcool 3D场景查看器
 
-这是一个基于Vue 3和Three.js的3D场景查看器应用，允许用户查看3D场景。
+这是一个基于Vue 3和Three.js的3D场景查看器应用，允许用户查看虚拟校园3D场景。
 
 ## 项目概述
 
@@ -15,32 +15,119 @@ vShcool是一个轻量级的3D场景查看器，专为教育和展示目的设�
 - 滚轮滚动调整视图高度（俯角自动调整）
 - 场景选择切换功能
 - 对象选择与信息显示功能
+- **新增**: 后台管理系统，可配置建筑物信息
+- **新增**: 支持跨域资源共享(CORS)，前端可从不同域名访问后台API
 
-## 技术架构
+## 后台管理系统
 
-### 前端框架
+在admin目录下添加了一个前后端不分离的后台管理系统，用于管理地图中的建筑物。
 
-- **Vue 3**: 使用组合式API构建响应式用户界面
-- **Pinia**: 状态管理库，用于管理应用状态
-- **Three.js**: 3D图形库，用于渲染3D场景
+### 功能
 
-### 项目结构
+- 添加、编辑、删除建筑物
+- 设置建筑物的位置、旋转和缩放
+- 提供API接口供前端获取建筑物数据
+- 支持跨域资源共享(CORS)，允许从不同域名访问API
+
+### 技术栈
+
+- **Express.js**: Web应用框架
+- **EJS**: 模板引擎
+- **本地文件存储**: 使用JSON文件存储建筑物数据
+- **CORS**: 跨域资源共享支持
+
+### 启动方式
+
+```bash
+# 进入后台管理系统目录
+cd admin
+
+# 安装依赖
+npm install
+
+# 启动服务器
+npm start
+```
+
+访问 http://localhost:3000 使用管理系统
+
+### API
+
+- **GET /api/buildings**: 获取所有建筑物数据
+
+### 跨域配置
+
+后台API已配置CORS支持，默认允许所有域名访问。如需修改CORS配置，请编辑admin/app.js文件中的以下部分：
+
+```javascript
+// 配置CORS
+app.use(cors({
+  origin: '*', // 允许所有来源访问，生产环境中应该设置为特定域名，如 'http://example.com'
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+```
+
+在生产环境中，建议将origin设置为特定域名，以提高安全性。
+
+## 前端与后台系统集成
+
+前端可以通过发送HTTP请求获取后台系统中配置的建筑物数据：
+
+```javascript
+// 获取建筑物数据示例
+async function fetchBuildingsData() {
+  try {
+    const response = await fetch('/api/buildings');
+    const data = await response.json();
+    return data.buildings;
+  } catch (error) {
+    console.error('获取建筑物数据失败:', error);
+    return [];
+  }
+}
+```
+
+### 类型格式说明
+
+后台管理系统和前端应用程序现在使用相同的类型格式：建筑物类型使用小写字符串（如 `'house'`、`'tree'` 等）。这确保了前后端代码的一致性，无需额外的类型转换。
+
+### 颜色格式说明
+
+建筑物数据中的颜色值现在统一使用数字格式，而不是十六进制字符串格式。例如，使用 `15657130` 而不是 `"0xEEE8AA"`。这确保了前后端数据格式的一致性，并简化了三维渲染过程。
+
+颜色数据处理：
+- 后台保存时：自动将十六进制字符串颜色值转换为数字格式
+- 数据迁移：已提供 `colorConverter.js` 脚本将已有数据中的颜色字符串转换为数字格式
+- 前端处理：提供了兼容性处理，确保任何可能的字符串颜色值被正确转换为数字
+
+运行颜色转换脚本：
+```bash
+# 在admin目录下
+npm run convert-colors
+```
+
+## 项目结构
 
 ```
 vShcool/
-├── src/
-│   ├── components/         # Vue组件
-│   │   └── Viewer/         # 场景查看器组件
-│   ├── composables/        # Vue组合式API
-│   │   └── useThreeScene.js # Three.js场景管理
-│   ├── stores/             # Pinia状态管理
-│   │   └── sceneStore.js   # 场景状态管理
-│   ├── utils/              # 工具函数
-│   │   └── objectFactory.js # 3D对象工厂
-│   ├── App.vue             # 主应用组件
-│   └── main.js             # 应用入口
-└── public/                 # 静态资源
-    └── textures/           # 纹理资源
+├── admin/                 # 后台管理系统
+│   ├── app.js             # Express应用主文件
+│   ├── data/              # 数据存储
+│   ├── public/            # 静态资源
+│   └── views/             # 视图模板
+├── src/                   # 前端源代码
+└── public/                # 前端静态资源
+```
+
+## 启动前端项目
+
+```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
 ```
 
 ## 核心模块说明
